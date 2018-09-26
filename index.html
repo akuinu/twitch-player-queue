@@ -1,0 +1,131 @@
+<html>
+<head>
+  <script src="https://cdn.jsdelivr.net/npm/vue@2.5.17/dist/vue.js"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.7.1/css/bulma.css" integrity="sha256-zKA1Bf41O96+gJSlkn/Bh2HATW/OhwkApPlYTp3B5O8=" crossorigin="anonymous" />
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.3.1/css/all.css" integrity="sha384-mzrmE5qonljUremFsqc01SB46JvROS7bZs3IO2EmfFsd15uHvIt+Y8vEf7N7fWAU" crossorigin="anonymous">
+  </head>
+<body>
+<div id="app">
+  <div class="has-background-grey-dark">
+	<button class="button is-black" title="Setings" @click="settings.disply = !settings.disply"><span class="icon"><i class="fa fa-cog"></i></span></button>
+	<span id="status" class="tag is-warning">Not connected</span>
+	<div class="container" v-if="settings.disply">
+		<div class="field is-horizontal">
+			<div class="field-label is-normal">
+				<label class="label has-text-grey-light">Channel:</label>
+			</div>
+			<div class="field-body">
+				<div class="field">
+					<p class="control">
+					<input class="input has-text-gray" type="text" placeholder="Your channel name" v-model="settings.channel">
+					</p>
+				</div>
+				<button class="button is-info" title="Info" @click="settings.channelInfoShow = !settings.channelInfoShow"><span class="icon"><i class="fas fa-info-circle"></i></span></button>
+			</div>
+		</div>
+		<div class="notification" v-if="settings.channelInfoShow">This is for your Twitch channel name.</div>
+		
+		
+		<div class="field is-horizontal">
+		  <div class="field-label is-normal">
+			<label class="label has-text-grey-light">User:</label>
+		  </div>
+		  <div class="field-body">
+			<div class="field">
+			  <p class="control">
+				<input class="input is-primary" type="text" placeholder="Mesaage delivery account name, bot for example" v-model="settings.user">
+			  </p>
+			</div>
+		  <button class="button is-info" title="Info" @click="settings.userInfoShow = !settings.userInfoShow"><span class="icon"><i class="fas fa-info-circle"></i></span></button>
+		  </div>
+		</div>
+		<div class="notification" v-if="settings.userInfoShow">Twitch user name, the one that will be delivering the messages. Use ether your channel bot or your own account.</div>
+		
+		<div class="field is-horizontal">
+		  <div class="field-label is-normal">
+			<label class="label has-text-grey-light">OAuth token:</label>
+		  </div>
+		  <div class="field-body">
+			<div class="field">
+			  <p class="control">
+				<input class="input is-primary" type="text" placeholder="OAUTH TOKEN" v-model="settings.OAUTH_TOKEN">
+			  </p>
+			</div>
+		  <button class="button is-info" title="Info" @click="settings.OAUTH_TOKENInfoShow = !settings.OAUTH_TOKENInfoShow"><span class="icon"><i class="fas fa-info-circle"></i></span></button>
+		  </div>
+		</div>
+		<div class="notification" v-if="settings.OAUTH_TOKENInfoShow">
+		OAUTH token - used to connect to Twitch chat. Looks something like this: oauth:oauth:xxxxxxxxxxxxxxxxxxxxxxxxxxxxxx <br>
+		To get one you can visit <a href="https://twitchapps.com/tmi/" target="_blank">https://twitchapps.com/tmi/</a> <br>
+		Also keep in mind your bot might be already using one and generating a new token may cause problems with your bot. 
+		</div>
+		
+		<div class="field is-horizontal">
+		  <div class="field-label is-normal">
+			<label class="label has-text-grey-light">Keyword:</label>
+		  </div>
+		  <div class="field-body">
+			<div class="field">
+			  <p class="control">
+				<input class="input is-primary" type="text" placeholder="Keyword" v-model="settings.keyword">
+			  </p>
+			</div>
+		  <button class="button is-info" title="Info" @click="settings.keywordInfoShow = !settings.keywordInfoShow"><span class="icon"><i class="fas fa-info-circle"></i></span></button>
+		  </div>
+		</div>
+		<div class="notification" v-if="settings.keywordInfoShow">
+			Keyword that is viewers can use to join the que. <br>
+			For example: "!join" "play"
+		</div>
+		
+		<button class="button is-black" title="Connect" @click="connect()">Connect</button>
+		<button class="button is-black" title="Clear the que" @click="clear()">Clear</button>		
+	</div>
+	<br>
+  </div>
+	<section class="section">
+		<div class="field is-horizontal">
+			<div class="field-label is-normal">
+				<label class="label">Message for people:</label>
+			</div>
+			<div class="field-body">
+				<div class="field">
+				<p class="control">
+					<input class="input is-primary" type="text" placeholder="Message sent to people" v-model="message">
+				</p>
+				</div>
+				<div class="field">
+					<button class="button is-primary" title="Announce in chat" v-bind:disabled="!connectionOpen" @click="announce()"><span class="icon"><i class="fas fa-envelope"></i></span></button>
+				</div>
+			</div>
+		</div>
+		<table class="table">
+		  <thead>
+			<tr>
+			  <th><abbr title="Position">Pos</abbr></th>
+			  <th><abbr title="Username">Username</abbr></th>
+			  <th><abbr title="Games played">Games</abbr></th>
+			  <th><abbr title="Time since joing the que">Time</abbr></th>
+			  <th></th>
+			</tr>
+		  </thead>
+		  <tbody>
+			<tr v-for="(item, index) in usersQueued">
+			  <th>{{index + 1}}</th>
+			  <td>{{item.name}}</td>
+			  <td>{{item.value}}</td>
+			  <td>{{timeSince(item.time)}}</td>
+			  <td>
+				<button :class="(item.messageSent) ? ('button is-gray') : ('button is-primary')" :title="(item.messageSent) ? ('Message sent') : ('Send message')" v-bind:disabled="!connectionOpen"  @click="sendWhisper(index)"><span class="icon"><i class="fas fa-envelope"></i></span></button>
+				<button class="button is-success" title="Joined game" @click="joinedGame(index)"><span class="icon"><i class="fas fa-check"></i></span></button>
+				<button class="button is-danger" title="Kick" @click="removeItem(index)"><span class="icon"><i class="fas fa-times"></i></span></button>
+			  </td>
+			</tr>
+			<tr>
+		  </tbody>
+		</table>
+	</section>
+</div>
+  <script src="app.js"></script>
+</body>
+</html>

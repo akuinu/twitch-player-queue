@@ -70,6 +70,9 @@ var app = new Vue({
 		usersPlayed: function() {
 			let parsed = JSON.stringify(this.usersPlayed);
 			sessionStorage.setItem("usersPlayed", parsed);
+		},
+		message: async function() {
+			this.usersQueued.forEach(async (user) => { user.messageSent = false; });			
 		}
 	},
 	methods: {

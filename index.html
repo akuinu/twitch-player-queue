@@ -24,8 +24,8 @@
 			</div>
 		</div>
 		<div class="notification" v-if="settings.channelInfoShow">This is for your Twitch channel name.</div>
-		
-		
+
+
 		<div class="field is-horizontal">
 		  <div class="field-label is-normal">
 			<label class="label has-text-grey-light">User:</label>
@@ -40,7 +40,7 @@
 		  </div>
 		</div>
 		<div class="notification" v-if="settings.userInfoShow">Twitch user name, the one that will be delivering the messages. Use ether your channel bot or your own account.</div>
-		
+
 		<div class="field is-horizontal">
 		  <div class="field-label is-normal">
 			<label class="label has-text-grey-light">OAuth token:</label>
@@ -57,9 +57,9 @@
 		<div class="notification" v-if="settings.OAUTH_TOKENInfoShow">
 		OAUTH token - used to connect to Twitch chat. Looks something like this: oauth:xxxxxxxxxxxxxxxxxxxxxxxxxxxxxx <br>
 		To get one you can visit <a href="https://twitchapps.com/tmi/" target="_blank">https://twitchapps.com/tmi/</a> <br>
-		Also keep in mind your bot might be already using one and generating a new token may cause problems with your bot. 
+		Also keep in mind your bot might be already using one and generating a new token may cause problems with your bot.
 		</div>
-		
+
 		<div class="field is-horizontal">
 		  <div class="field-label is-normal">
 			<label class="label has-text-grey-light">Keyword:</label>
@@ -77,9 +77,9 @@
 			Keyword that is viewers can use to join the que. <br>
 			For example: "!join" "play"
 		</div>
-		
+
 		<button class="button is-black" title="Connect" tabindex="5" @click="connect()">Connect</button>
-		<button class="button is-black" title="Clear the que" @click="clear()">Clear</button>		
+		<button class="button is-black" title="Clear the que" @click="clear()">Clear</button>
 	</div>
 	<br>
   </div>
@@ -91,7 +91,7 @@
 			<div class="field-body">
 				<div class="field">
 				<p class="control">
-					<input class="input is-primary" type="text" tabindex="5" placeholder="Message sent to people" v-model="message">
+					<input class="input is-primary" type="text" tabindex="5" placeholder="Type !join in chat to join." v-model="message">
 				</p>
 				</div>
 				<div class="field">
@@ -99,6 +99,21 @@
 				</div>
 			</div>
 		</div>
+    <div class="field is-horizontal">
+      <div class="field-label is-normal">
+        <label class="label">Whisper message:</label>
+      </div>
+      <div class="field-body">
+        <div class="field">
+        <p class="control">
+          <input class="input is-primary" type="text" tabindex="6" placeholder="The game code is XXXX" v-model="whisper">
+        </p>
+        </div>
+        <div class="field">
+          <button class="button is-primary" title="Announce in chat" v-bind:disabled="!connectionOpen" @click="announceSecret()"><span class="icon"><i class="fas fa-envelope"></i></span></button>
+        </div>
+      </div>
+    </div>
 		<table class="table">
 		  <thead>
 			<tr>

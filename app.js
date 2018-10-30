@@ -19,19 +19,20 @@ var app = new Vue({
             }
         ],
 		usersPlayed: [],
-		message: "The message for the people",
+		message: "Type !join in chat to join.",
+		whisper: "The game code is XXXX",
 		connectionOpen: false,
 		settings: {
 			disply: true,
 			channel: "",
-			channelInfoShow: false, 
+			channelInfoShow: false,
 			user: "",
 			userInfoShow: false,
 			OAUTH_TOKEN: "",
 			OAUTH_TOKENInfoShow: false,
 			keyword: "!join",
 			keywordInfoShow: false,
-			colours: false			
+			colours: false
 		}
     },
     mounted() {
@@ -71,8 +72,8 @@ var app = new Vue({
 			let parsed = JSON.stringify(this.usersPlayed);
 			sessionStorage.setItem("usersPlayed", parsed);
 		},
-		message: async function() {
-			this.usersQueued.forEach(async (user) => { user.messageSent = false; });			
+		whisper: async function() {
+			this.usersQueued.forEach(async (user) => { user.messageSent = false; });
 		}
 	},
 	methods: {
@@ -88,14 +89,14 @@ var app = new Vue({
 					user.time = new Date;
 					this.usersQueued.push(user);
 					return;
-				} 
+				}
 			}
 			for (var i = 0, l = this.usersQueued.length; i < l; ++i) {
 				if (this.usersQueued[i].name === userData.username) {
 					// TODO: wants to join again? just ignore?
 					return;
-				} 
-			}			
+				}
+			}
             var item = {
                 name: userData.username,
 				value: 0,
@@ -118,8 +119,11 @@ var app = new Vue({
 		announce: function (){
 			sentMessageToChat(this.message);
 		},
+    announceSecret: function (){
+      sentMessageToChat(this.whisper);
+    },
 		sendWhisper: function (index) {
-			sentWhisper(this.usersQueued[index].name,this.message)
+			sentWhisper(this.usersQueued[index].name,this.whisper)
 			this.usersQueued[index].messageSent = true;
 		},
         removeItem: function (index) {
@@ -137,8 +141,8 @@ var app = new Vue({
 		saveSettings: function(){
 			localStorage.channel = this.settings.channel;
 			localStorage.user = this.settings.user;
-			localStorage.OAUTH_TOKEN = this.settings.OAUTH_TOKEN;		
-			localStorage.keyword = this.settings.keyword;		
+			localStorage.OAUTH_TOKEN = this.settings.OAUTH_TOKEN;
+			localStorage.keyword = this.settings.keyword;
 		},
 		timeSince: function(date) {
 		  var seconds = Math.floor((new Date() - date) / 1000);
@@ -193,7 +197,7 @@ function connectChat(settings){
 		if (message !== null) {
 		  var parsed = parseMessage(message.data);
 		  if (parsed !== null) {
-			if (parsed.command === "PRIVMSG") {			
+			if (parsed.command === "PRIVMSG") {
 				console.log('MSG: ' + parsed.message + ' from ' + parsed.username);
 				/*	regex? maybe?
 					var  r = /!join/;
@@ -201,7 +205,7 @@ function connectChat(settings){
 				*/
 				if (app.settings.keyword.trim() ===  parsed.message.trim()) {
 					app.addUser(parsed);
-				} 
+				}
 			} else if (parsed.command === "PING") {
 			  ws.send("PONG :" + parsed.message);
 			}
@@ -278,16 +282,16 @@ function updateStatus(){
 	var element = document.getElementById("status");
 	app.connectionOpen = false;
 	if(ws.readyState === ws.CONNECTING){
-		element.innerHTML = "Connecting";		
+		element.innerHTML = "Connecting";
 		element.className = "tag is-info";
 	}
 	if(ws.readyState === ws.OPEN){
 		app.connectionOpen = true;
-		element.innerHTML = "Connected";		
+		element.innerHTML = "Connected";
 		element.className = "tag is-success";
 	}
 	if(ws.readyState === ws.CLOSING){
-		element.innerHTML = "Closing";		
+		element.innerHTML = "Closing";
 		element.className = "tag is-warning";
 	}
 	if(ws.readyState === ws.CLOSED){

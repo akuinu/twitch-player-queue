@@ -79,6 +79,7 @@ var app = new Vue({
 		connect: function(){
 			connectChat(this.settings);
 			this.saveSettings();
+			this.settings.disply = false;
 		},
         addUser: function (userData) {
 			for (var i = 0, l = this.usersPlayed.length; i < l; ++i) {

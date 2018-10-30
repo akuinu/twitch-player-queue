@@ -17,7 +17,7 @@
 			<div class="field-body">
 				<div class="field">
 					<p class="control">
-					<input class="input has-text-gray" type="text" placeholder="Your channel name" v-model="settings.channel">
+					<input class="input has-text-gray" type="text" tabindex="1" placeholder="Your channel name" v-model="settings.channel">
 					</p>
 				</div>
 				<button class="button is-info" title="Info" @click="settings.channelInfoShow = !settings.channelInfoShow"><span class="icon"><i class="fas fa-info-circle"></i></span></button>
@@ -33,7 +33,7 @@
 		  <div class="field-body">
 			<div class="field">
 			  <p class="control">
-				<input class="input is-primary" type="text" placeholder="Mesaage delivery account name, bot for example" v-model="settings.user">
+				<input class="input is-primary" type="text" tabindex="2" placeholder="Mesaage delivery account name, bot for example" v-model="settings.user">
 			  </p>
 			</div>
 		  <button class="button is-info" title="Info" @click="settings.userInfoShow = !settings.userInfoShow"><span class="icon"><i class="fas fa-info-circle"></i></span></button>
@@ -48,7 +48,7 @@
 		  <div class="field-body">
 			<div class="field">
 			  <p class="control">
-				<input class="input is-primary" type="text" placeholder="OAUTH TOKEN" v-model="settings.OAUTH_TOKEN">
+				<input class="input is-primary" type="text" tabindex="3" placeholder="OAUTH TOKEN" v-model="settings.OAUTH_TOKEN">
 			  </p>
 			</div>
 		  <button class="button is-info" title="Info" @click="settings.OAUTH_TOKENInfoShow = !settings.OAUTH_TOKENInfoShow"><span class="icon"><i class="fas fa-info-circle"></i></span></button>
@@ -67,7 +67,7 @@
 		  <div class="field-body">
 			<div class="field">
 			  <p class="control">
-				<input class="input is-primary" type="text" placeholder="Keyword" v-model="settings.keyword">
+				<input class="input is-primary" type="text" tabindex="4" placeholder="Keyword" v-model="settings.keyword">
 			  </p>
 			</div>
 		  <button class="button is-info" title="Info" @click="settings.keywordInfoShow = !settings.keywordInfoShow"><span class="icon"><i class="fas fa-info-circle"></i></span></button>
@@ -78,7 +78,7 @@
 			For example: "!join" "play"
 		</div>
 		
-		<button class="button is-black" title="Connect" @click="connect()">Connect</button>
+		<button class="button is-black" title="Connect" tabindex="5" @click="connect()">Connect</button>
 		<button class="button is-black" title="Clear the que" @click="clear()">Clear</button>		
 	</div>
 	<br>
@@ -91,7 +91,7 @@
 			<div class="field-body">
 				<div class="field">
 				<p class="control">
-					<input class="input is-primary" type="text" placeholder="Message sent to people" v-model="message">
+					<input class="input is-primary" type="text" tabindex="5" placeholder="Message sent to people" v-model="message">
 				</p>
 				</div>
 				<div class="field">

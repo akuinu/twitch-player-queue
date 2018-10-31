@@ -18,7 +18,8 @@ var app = new Vue({
 				time: new Date
             }
         ],
-		usersPlayed: [],
+		usersInGame: [],
+    usersPlayed: [],
 		message: "Type !join in chat to join.",
 		whisper: "The game code is XXXX",
 		connectionOpen: false,
@@ -55,23 +56,34 @@ var app = new Vue({
 			sessionStorage.removeItem("usersQueued");
 		  }
 		}
-		if(sessionStorage.getItem("usersPlayed")) {
+		if(sessionStorage.getItem("usersInGame")) {
 		  try {
-			this.usersPlayed = JSON.parse(sessionStorage.getItem("usersPlayed"));
+			this.usersInGame = JSON.parse(sessionStorage.getItem("usersInGame"));
 		  } catch(e) {
-			sessionStorage.removeItem("usersPlayed");
+			sessionStorage.removeItem("usersInGame");
 		  }
 		}
+    if(sessionStorage.getItem("usersPlayed")) {
+      try {
+      this.usersPlayed = JSON.parse(sessionStorage.getItem("usersPlayed"));
+      } catch(e) {
+      sessionStorage.removeItem("usersPlayed");
+      }
+    }
 	},
 	watch: {
 		usersQueued: function() {
 			let parsed = JSON.stringify(this.usersQueued);
 			sessionStorage.setItem("usersQueued", parsed);
 		},
-		usersPlayed: function() {
-			let parsed = JSON.stringify(this.usersPlayed);
-			sessionStorage.setItem("usersPlayed", parsed);
+		usersInGame: function() {
+			let parsed = JSON.stringify(this.usersInGame);
+			sessionStorage.setItem("usersInGame", parsed);
 		},
+    usersPlayed: function() {
+      let parsed = JSON.stringify(this.usersPlayed);
+      sessionStorage.setItem("usersPlayed", parsed);
+    },
 		whisper: async function() {
 			this.usersQueued.forEach(async (user) => { user.messageSent = false; });
 		}
@@ -82,7 +94,7 @@ var app = new Vue({
 			this.saveSettings();
 			this.settings.disply = false;
 		},
-        addUser: function (userData) {
+    addUser: function (userData) {
 			for (var i = 0, l = this.usersPlayed.length; i < l; ++i) {
 				if (this.usersPlayed[i].name === userData.username) {
 					var user = this.usersPlayed.splice(i, 1)[0];
@@ -97,14 +109,20 @@ var app = new Vue({
 					return;
 				}
 			}
-            var item = {
-                name: userData.username,
+      for (var i = 0, l = this.usersInGame.length; i < l; ++i) {
+        if (this.usersInGame[i].name === userData.username) {
+          // TODO: wants to join again? while already in game? greedy much?
+          return;
+        }
+      }
+      var item = {
+        name: userData.username,
 				value: 0,
 				messageSent: false,
 				color: '#000000',
 				displayName: userData.username,
 				time: new Date
-            };
+      };
 			var colorRegexMatch = userData.tags.match(/color=(#[0-9A-Fa-f]{6});/);
 			if (colorRegexMatch) {
 				item.color = colorRegexMatch[1];
@@ -113,9 +131,8 @@ var app = new Vue({
 			if (displayNameRegexMatch) {
 				item.displayName = displayNameRegexMatch[1];
 			}
-
-            this.usersQueued.push(item);
-        },
+      this.usersQueued.push(item);
+    },
 		announce: function (){
 			sentMessageToChat(this.message);
 		},
@@ -126,16 +143,35 @@ var app = new Vue({
 			sentWhisper(this.usersQueued[index].name,this.whisper)
 			this.usersQueued[index].messageSent = true;
 		},
-        removeItem: function (index) {
-            this.usersQueued.splice(index, 1);
-        },
+    removeItem: function (index) {
+        this.usersQueued.splice(index, 1);
+    },
 		joinedGame: function (index) {
 			this.usersQueued[index].value++;
 			this.usersQueued[index].messageSent = false;
-			this.usersPlayed.push(this.usersQueued.splice(index, 1)[0]);
+			this.usersInGame.push(this.usersQueued.splice(index, 1)[0]);
 		},
+    moveGameToPlayed: function (index) {
+      this.usersPlayed.push(this.usersInGame.splice(index, 1)[0]);
+    },
+    moveAllGameToPlayed: function () {
+      for (var i = this.usersInGame.length -1; i >= 0; i--) {
+        this.moveGameToPlayed(i);
+      }
+    },
+    moveGameToQue: function (index) {
+      var user = this.usersInGame.splice(index, 1)[0];
+      user.time = new Date;
+      this.usersQueued.push(user);
+    },
+    moveAllGameToQue: function () {
+      for (var i = this.usersInGame.length-1; i >= 0; i--) {
+        this.moveGameToQue(i);
+      }
+    },
 		clear: function() {
 			this.usersQueued = [];
+			this.usersInGame = [];
 			this.usersPlayed = [];
 		},
 		saveSettings: function(){

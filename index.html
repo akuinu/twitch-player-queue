@@ -78,6 +78,40 @@
 			For example: "!join" "play"
 		</div>
 
+    <div class="field is-horizontal">
+      <div class="field-label is-normal">
+      <label class="label has-text-grey-light">Subscriber marker:</label>
+      </div>
+      <div class="field-body">
+      <div class="field">
+        <p class="control">
+        <button :class="(settings.subMarkers) ? ('fas fa-toggle-on button is-success') : ('fas fa-toggle-off button is-gray')" title="Toggle on/off" @click="settings.subMarkers = !settings.subMarkers"></button>
+        </p>
+      </div>
+      <button class="button is-info" title="Info" @click="settings.subInfoShow = !settings.subInfoShow"><span class="icon"><i class="fas fa-info-circle"></i></span></button>
+      </div>
+    </div>
+    <div class="notification" v-if="settings.subInfoShow">
+      Will show or hide the Subscriber collumn in the queue.
+    </div>
+
+    <div class="field is-horizontal">
+      <div class="field-label is-normal">
+      <label class="label has-text-grey-light">Colour:</label>
+      </div>
+      <div class="field-body">
+      <div class="field">
+        <p class="control">
+        <button :class="(settings.colours) ? ('fas fa-toggle-on button is-success') : ('fas fa-toggle-off button is-gray')" title="Toggle on/off" @click="settings.colours = !settings.colours"></button>
+        </p>
+      </div>
+      <button class="button is-info" title="Info" @click="settings.coloursInfoShow = !settings.coloursInfoShow"><span class="icon"><i class="fas fa-info-circle"></i></span></button>
+      </div>
+    </div>
+    <div class="notification" v-if="settings.coloursInfoShow">
+      Have usernames with colour.
+    </div>
+
 		<button class="button is-black" title="Connect" tabindex="5" @click="connect()">Connect</button>
 		<button class="button is-black" title="Clear the queue" @click="clear()">Clear</button>
 	</div>
@@ -121,6 +155,7 @@
   			<tr>
   			  <th><abbr title="Position">Pos</abbr></th>
   			  <th><abbr title="Username">Username</abbr></th>
+  			  <th v-if="settings.subMarkers"><abbr title="Subscriber">Sub</abbr></th>
   			  <th><abbr title="Games played">Games</abbr></th>
   			  <th><abbr title="Time since joing the queue">Time</abbr></th>
   			  <th></th>
@@ -129,14 +164,15 @@
   		  <tbody>
   			<tr v-for="(item, index) in usersQueued">
   			  <th>{{index + 1}}</th>
-  			  <td>{{item.name}}</td>
+  			  <td :style="(settings.colours) ? ('color:' + item.color) : ('color:black')" >{{item.name}}</td>
+  			  <td v-if="settings.subMarkers"><span class="icon"><i :class="(item.sub) ? ('fas fa-check is-success') : ('fa fa-minus is-gray')"></i></span> </td>
   			  <td>{{item.value}}</td>
   			  <td>{{timeSince(item.time)}}</td>
   			  <td>
   				<button :class="(item.messageSent) ? ('button is-gray') : ('button is-primary')" :title="(item.messageSent) ? ('Message sent') : ('Send message')" v-bind:disabled="!connectionOpen"  @click="sendWhisper(index)"><span class="icon"><i class="fas fa-envelope"></i></span></button>
   				<button class="button is-success" title="Joined game" @click="joinedGame(index)"><span class="icon"><i class="fas fa-check"></i></span></button>
   				<button class="button is-danger" title="Kick" @click="removeItem(index)"><span class="icon"><i class="fas fa-times"></i></span></button>
-  			  </td>
+          </td>
   			</tr>
   			<tr>
   		  </tbody>

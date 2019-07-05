@@ -33,7 +33,10 @@ var app = new Vue({
 			OAUTH_TOKENInfoShow: false,
 			keyword: "!join",
 			keywordInfoShow: false,
-			colours: false
+			colours: false,
+      coloursInfoShow: false,
+      subMarkers: false,
+      subInfoShow: false
 		}
     },
     mounted() {
@@ -49,6 +52,12 @@ var app = new Vue({
 		if (localStorage.keyword){
 			this.settings.keyword = localStorage.keyword;
 		}
+    if (localStorage.subMarkers){
+      this.settings.subMarkers = localStorage.subMarkers;
+    }
+    if (localStorage.colours){
+      this.settings.colours = localStorage.colours;
+    }
 		if(sessionStorage.getItem("usersQueued")) {
 		  try {
 			this.usersQueued = JSON.parse(sessionStorage.getItem("usersQueued"));
@@ -121,7 +130,8 @@ var app = new Vue({
 				messageSent: false,
 				color: '#000000',
 				displayName: userData.username,
-				time: new Date
+				time: new Date,
+        sub: false
       };
 			var colorRegexMatch = userData.tags.match(/color=(#[0-9A-Fa-f]{6});/);
 			if (colorRegexMatch) {
@@ -131,6 +141,10 @@ var app = new Vue({
 			if (displayNameRegexMatch) {
 				item.displayName = displayNameRegexMatch[1];
 			}
+      var subscriberRegexMatch = userData.tags.match(/subscriber/);
+      if (subscriberRegexMatch) {
+        item.sub = true;
+      }
       this.usersQueued.push(item);
     },
 		announce: function (){
@@ -178,7 +192,8 @@ var app = new Vue({
 			localStorage.channel = this.settings.channel;
 			localStorage.user = this.settings.user;
 			localStorage.OAUTH_TOKEN = this.settings.OAUTH_TOKEN;
-			localStorage.keyword = this.settings.keyword;
+			localStorage.subMarkers = this.settings.subMarkers;
+			localStorage.colours = this.settings.colours;
 		},
 		timeSince: function(date) {
 		  var seconds = Math.floor((new Date() - date) / 1000);

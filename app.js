@@ -14,6 +14,7 @@ var app = new Vue({
             {
                 name: 'user_1',
                 value: 2,
+                sub: true,
 				messageSent: false,
 				time: new Date
             }
@@ -36,6 +37,7 @@ var app = new Vue({
 			colours: false,
       coloursInfoShow: false,
       subMarkers: false,
+      subOnly: false,
       subInfoShow: false
 		}
     },
@@ -54,6 +56,9 @@ var app = new Vue({
 		}
     if (localStorage.subMarkers){
       this.settings.subMarkers = localStorage.subMarkers;
+    }
+    if (localStorage.subOnly){
+      this.settings.subOnly = localStorage.subOnly;
     }
     if (localStorage.colours){
       this.settings.colours = localStorage.colours;
@@ -141,11 +146,13 @@ var app = new Vue({
 			if (displayNameRegexMatch) {
 				item.displayName = displayNameRegexMatch[1];
 			}
-      var subscriberRegexMatch = userData.tags.match(/subscriber/);
+      var subscriberRegexMatch = userData.tags.match(/badges=.*subscriber\/\d+/);
       if (subscriberRegexMatch) {
         item.sub = true;
       }
-      this.usersQueued.push(item);
+      if (!this.settings.subOnly || (this.settings.subOnly && item.sub)){
+        this.usersQueued.push(item);
+      }
     },
 		announce: function (){
 			sentMessageToChat(this.message);
@@ -193,7 +200,10 @@ var app = new Vue({
 			localStorage.user = this.settings.user;
 			localStorage.OAUTH_TOKEN = this.settings.OAUTH_TOKEN;
 			localStorage.subMarkers = this.settings.subMarkers;
+			localStorage.keyword = this.settings.keyword;
 			localStorage.colours = this.settings.colours;
+			localStorage.subOnly = this.settings.subOnly;
+			localStorage.subMarkers = this.settings.subMarkers;
 		},
 		timeSince: function(date) {
 		  var seconds = Math.floor((new Date() - date) / 1000);

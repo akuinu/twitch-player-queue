@@ -88,11 +88,20 @@
         <button :class="(settings.subMarkers) ? ('fas fa-toggle-on button is-success') : ('fas fa-toggle-off button is-gray')" title="Toggle on/off" @click="settings.subMarkers = !settings.subMarkers"></button>
         </p>
       </div>
+      <div class="field-label is-normal">
+      <label class="label has-text-grey-light">Subscriber only:</label>
+      </div>
+      <div class="field">
+        <p class="control">
+        <button :class="(settings.subOnly) ? ('fas fa-toggle-on button is-success') : ('fas fa-toggle-off button is-gray')" title="Toggle on/off" @click="settings.subOnly = !settings.subOnly"></button>
+        </p>
+      </div>
       <button class="button is-info" title="Info" @click="settings.subInfoShow = !settings.subInfoShow"><span class="icon"><i class="fas fa-info-circle"></i></span></button>
       </div>
     </div>
     <div class="notification" v-if="settings.subInfoShow">
-      Will show or hide the Subscriber collumn in the queue.
+      Subscriber marker will show or hide the Subscriber collumn in the queue. <br>
+      Subscriber only disables or enables non Subscribers enter the queue.
     </div>
 
     <div class="field is-horizontal">
